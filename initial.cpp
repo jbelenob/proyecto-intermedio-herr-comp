@@ -16,6 +16,10 @@ int main(int argc, char** argv)
 
   std::vector <long> m1(size*size, 0);
 
+  fill_matrix(m1, SEED);
+
+  print_matrix(m1);
+
   return 0;
 }
 
@@ -33,5 +37,19 @@ for(long ii = 0; ii < size; ii++)
     {
       data[ii*size + jj] = dis(gen);
     }
+  } 
+}
+
+void print_matrix(const std::vector <long> & data)
+{
+   const long size = std::sqrt(data.size());
+
+for(long ii = 0; ii < size; ii++)
+  {
+    for(long jj = 0; jj < size; jj++)
+    {
+      std::cout << data[ii*size + jj] << " ";
+    }
+    std::cout << '\n';
   } 
 }
