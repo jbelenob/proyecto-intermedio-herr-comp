@@ -11,40 +11,39 @@
  */
 
 
-void fill_matrix(std::vector<long> & data, int seed);
+void fill_matrix(std::vector<long> & data, int seed, double p);
 void print_matrix(const std::vector <long> & data);
 bool find_nonclassified_cluster(std::vector <long> & data);
 //void classify_clusters(std::vector <long> & data);
 
 int main(int argc, char** argv)
 {
-  //Este va a ser el número de filas o de columnas.
+  //size va a ser el número de filas o de columnas.
   long size = std::atoi(argv[1]);
-
   const int SEED = std::atoi(argv[2]);
+  const double probability = std::atof(argv[3]);
 
   std::vector <long> m1(size*size, 0);
 
   //std::cout << find_nonclassified_cluster(m1) << '\n';
 
-  fill_matrix(m1, SEED);
+  fill_matrix(m1, SEED, probability);
 
   //std::cout << find_nonclassified_cluster(m1) << '\n';
 
   print_matrix(m1);
 
-  
-
   return 0;
 }
 
-void fill_matrix(std::vector<long> & data, int seed)
+void fill_matrix(std::vector<long> & data, int seed, double p)
 {
   const long size = std::sqrt(data.size());
 
   std::mt19937 gen(seed);
 
-  std::uniform_int_distribution<> dis(0, 1);
+  //Los sitios ocupados tendrán el numero 1, los no ocupados el 0.
+  std::discrete_distribution<> dis({1-p, p});
 
 for(long ii = 0; ii < size; ii++)
   {
@@ -71,7 +70,7 @@ for(long ii = 0; ii < size; ii++)
 
 bool find_nonclassified_cluster(std::vector <long> & data)
 {
-  long total_elements = data.size();
+  const long total_elements = data.size();
   
   for(long ii = 0; ii < total_elements; ++ii)
     {
