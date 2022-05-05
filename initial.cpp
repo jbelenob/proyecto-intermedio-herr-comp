@@ -19,6 +19,7 @@ long cluster_size(const std::vector <long> & data, const long cluster_num);
 void classify_clusters(std::vector <long> & data);
 void attach_neighbours(std::vector <long> & data, const long N);
 bool is_percolating(const std::vector <long> & data, const long cluster_num);
+bool is_there_a_percolating(const std::vector <long> & data);
 
 int main(int argc, char** argv)
 {
@@ -38,7 +39,7 @@ int main(int argc, char** argv)
 
   print_matrix(m1);
 
-  std::cout << is_percolating(m1, 2);
+  std::cout << is_percolating(m1, 3) << " " << is_there_a_percolating(m1);
 
   return 0;
 }
@@ -360,4 +361,27 @@ bool is_percolating(const std::vector <long> & data, const long cluster_num)
 	return false;
       }
     
+}
+
+bool is_there_a_percolating(const std::vector <long> & data)
+{
+  long ii = 0;
+  
+  for( ii = 2; ii < data.size(); ++ii)
+    {
+       if(std::none_of(data.begin(), data.end(), [ii](int k){ return k  == ii;}))
+	 {break;}
+    }
+
+  //ii será el número del último cluster.
+
+  for(long kk = 2; kk <= ii; ++kk)
+    {
+      if(is_percolating(data, kk))
+	{
+	  return true;
+	}
+    }
+
+  return false;
 }
