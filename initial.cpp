@@ -29,17 +29,11 @@ int main(int argc, char** argv)
 
   std::vector <long> m1(size*size, 0);
 
-  //std::cout << find_nonclassified_cluster(m1) << '\n' << cluster_size(m1, 1) << '\n';
-
   fill_matrix(m1, SEED, probability);
-
-  //std::cout << find_nonclassified_cluster(m1) << '\n' << cluster_size(m1, 1) << '\n';
 
   print_matrix(m1);
 
   classify_clusters(m1);
-
-  //attach_neighbours(m1, N1);
 
   print_matrix(m1);
 
@@ -55,9 +49,9 @@ void fill_matrix(std::vector<long> & data, int seed, double p)
   //Los sitios ocupados tendrán el numero 1, los no ocupados el 0.
   std::discrete_distribution<> dis({1-p, p});
 
-  for(long ii = 0; ii < size; ii++)
+  for(long ii = 0; ii < size; ++ii)
     {
-      for(long jj = 0; jj < size; jj++)
+      for(long jj = 0; jj < size; ++jj)
       {
 	data[ii*size + jj] = dis(gen);
       }
@@ -70,9 +64,9 @@ void print_matrix(const std::vector <long> & data)
 
    std::cout << '\n';
 
-   for(long ii = 0; ii < size; ii++)
+   for(long ii = 0; ii < size; ++ii)
      {
-       for(long jj = 0; jj < size; jj++)
+       for(long jj = 0; jj < size; ++jj)
 	 {
 	   std::cout << data[ii*size + jj] << " ";
 	 }
