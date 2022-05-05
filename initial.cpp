@@ -5,13 +5,6 @@
 #include <random>
 #include <algorithm>
 
-/*Nota: Lo primero que se va a hacer ahora será mirar que funciones 
- * de la libreria estandar puedo utilizar.
- * 2. Para la nuevo función de buscar vecinos, lo primero que va 
- * a hacer es buscar el 1, es decir el nuevo cluster.
- */
-
-
 void fill_matrix(std::vector<long> & data, int seed, double p);
 void print_matrix(const std::vector <long> & data);
 long find_nonclassified_cluster(std::vector <long> & data);
