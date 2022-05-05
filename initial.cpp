@@ -20,6 +20,8 @@ void classify_clusters(std::vector <long> & data);
 void attach_neighbours(std::vector <long> & data, const long N);
 bool is_percolating(const std::vector <long> & data, const long cluster_num);
 bool is_there_a_percolating(const std::vector <long> & data);
+long largest_percolating_cluster_size(const std::vector <long> & data);
+long number_of_last_cluster(const std::vector <long> & data);
 
 int main(int argc, char** argv)
 {
@@ -39,7 +41,9 @@ int main(int argc, char** argv)
 
   print_matrix(m1);
 
-  std::cout << is_percolating(m1, 3) << " " << is_there_a_percolating(m1);
+  std::cout << '\n'<< is_percolating(m1, 3) << " " << is_there_a_percolating(m1)
+	    << " " << largest_percolating_cluster_size(m1)
+	    << " " << number_of_last_cluster(m1);
 
   return 0;
 }
@@ -365,17 +369,9 @@ bool is_percolating(const std::vector <long> & data, const long cluster_num)
 
 bool is_there_a_percolating(const std::vector <long> & data)
 {
-  long ii = 0;
-  
-  for( ii = 2; ii < data.size(); ++ii)
-    {
-       if(std::none_of(data.begin(), data.end(), [ii](int k){ return k  == ii;}))
-	 {break;}
-    }
+  const long N = number_of_last_cluster(data);
 
-  //ii será el número del último cluster.
-
-  for(long kk = 2; kk <= ii; ++kk)
+  for(long kk = 2; kk <= N; ++kk)
     {
       if(is_percolating(data, kk))
 	{
@@ -384,4 +380,44 @@ bool is_there_a_percolating(const std::vector <long> & data)
     }
 
   return false;
+}
+
+long largest_percolating_cluster_size(const std::vector <long> & data)
+{
+  if(is_there_a_percolating(data) == false)
+    {
+      return 0;
+    }
+
+  long largest_size = 0;
+
+  const long N = number_of_last_cluster(data);
+
+  for(long ii = 2; ii <= N; ++ii)
+    {
+      long size_of_cluster_ii = cluster_size(data, ii);
+      
+      if(size_of_cluster_ii > largest_size)
+	{
+	  largest_size = size_of_cluster_ii;
+	}
+    }
+
+  return largest_size;
+}
+
+long number_of_last_cluster(const std::vector <long> & data)
+{
+  long ii = 0;
+  
+  for( ii = 2; ii < data.size(); ++ii)
+    {
+       if(std::none_of(data.begin(), data.end(), [ii](int k){ return k  == ii;}))
+	 {break;}
+    }
+
+  if(ii <= 2)
+    {return 0;}
+  
+  return (ii - 1);
 }
