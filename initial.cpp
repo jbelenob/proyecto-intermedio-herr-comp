@@ -17,14 +17,15 @@ void print_matrix(const std::vector <long> & data);
 long find_nonclassified_cluster(std::vector <long> & data);
 long cluster_size(const std::vector <long> & data, const long cluster_num);
 //void classify_clusters(std::vector <long> & data);
-//void attach_neighbours(std::vector <long> & data, const long N);
+void attach_neighbours(std::vector <long> & data, const long N);
 
 int main(int argc, char** argv)
 {
   //size va a ser el número de filas o de columnas.
-  long size = std::atoi(argv[1]);
+  const long size = std::atol(argv[1]);
   const int SEED = std::atoi(argv[2]);
   const double probability = std::atof(argv[3]);
+  const long N1 = std::atol(argv[4]);
 
   std::vector <long> m1(size*size, 0);
 
@@ -33,6 +34,10 @@ int main(int argc, char** argv)
   fill_matrix(m1, SEED, probability);
 
   std::cout << find_nonclassified_cluster(m1) << '\n' << cluster_size(m1, 1) << '\n';
+
+  print_matrix(m1);
+
+  attach_neighbours(m1, N1);
 
   print_matrix(m1);
 
@@ -60,6 +65,8 @@ void fill_matrix(std::vector<long> & data, int seed, double p)
 void print_matrix(const std::vector <long> & data)
 {
    const long size = std::sqrt(data.size());
+
+   std::cout << '\n';
 
    for(long ii = 0; ii < size; ii++)
      {
@@ -111,6 +118,7 @@ long cluster_num = 2;
       
     }
 }
+*/
 
 void attach_neighbours(std::vector <long> & data, const long N)
 {
@@ -246,4 +254,4 @@ void attach_neighbours(std::vector <long> & data, const long N)
    attach_if_full(adj3);
    attach_if_full(adj4);
 }
-*/
+
