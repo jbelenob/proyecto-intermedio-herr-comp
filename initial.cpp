@@ -16,7 +16,7 @@ void fill_matrix(std::vector<long> & data, int seed, double p);
 void print_matrix(const std::vector <long> & data);
 long find_nonclassified_cluster(std::vector <long> & data);
 long cluster_size(const std::vector <long> & data, const long cluster_num);
-//void classify_clusters(std::vector <long> & data);
+void classify_clusters(std::vector <long> & data);
 void attach_neighbours(std::vector <long> & data, const long N);
 
 int main(int argc, char** argv)
@@ -25,19 +25,21 @@ int main(int argc, char** argv)
   const long size = std::atol(argv[1]);
   const int SEED = std::atoi(argv[2]);
   const double probability = std::atof(argv[3]);
-  const long N1 = std::atol(argv[4]);
+  //const long N1 = std::atol(argv[4]);
 
   std::vector <long> m1(size*size, 0);
 
-  std::cout << find_nonclassified_cluster(m1) << '\n' << cluster_size(m1, 1) << '\n';
+  //std::cout << find_nonclassified_cluster(m1) << '\n' << cluster_size(m1, 1) << '\n';
 
   fill_matrix(m1, SEED, probability);
 
-  std::cout << find_nonclassified_cluster(m1) << '\n' << cluster_size(m1, 1) << '\n';
+  //std::cout << find_nonclassified_cluster(m1) << '\n' << cluster_size(m1, 1) << '\n';
 
   print_matrix(m1);
 
-  attach_neighbours(m1, N1);
+  classify_clusters(m1);
+
+  //attach_neighbours(m1, N1);
 
   print_matrix(m1);
 
@@ -100,25 +102,65 @@ long cluster_size(const std::vector <long> & data, const long cluster_num)
   return std::count_if(data.begin(), data.end(), [cluster_num](long i){return i == cluster_num;});
 }
 
-/*void classify_clusters(std::vector <long> & data)
+void classify_clusters(std::vector <long> & data)
 {
   /*Esta variable me va indicar si ya se identificaron todos los clusters.
-   *Si la variable es cierta es porque se encontró un nuevo cluster.*/
-//long new_cluster_position = find_nonclassified_cluster(data);
+   *Si la variable es mayor que 0 es porque se encontró un nuevo cluster.*/
+  long new_cluster_position = find_nonclassified_cluster(data);
 
-//Esta variable va enumerando los clusters
-/*
-long cluster_num = 2;
-  long cluster size = 
-  
+  //Esta variable va enumerando los clusters
+  long cluster_num = 2; 
+
+  //Esta variable me dirá cuantos pasos he dado para clasificar cierto cluster.
   long step = 0;
   
   while(new_cluster_position >= 0)
     {
+      data[new_cluster_position] = cluster_num;
+
+      step = 0;
+
+      //Esta variable me dirá si puedo seguir encontrar nuevos 1's vecinos.
+      bool find_new_adjacents = true;
+
+      while(find_new_adjacents == true)
+	{ 
+	  for(long ii = 0; ii < data.size(); ++ii)
+	    {
+	      if(data[ii] == (cluster_num + step))
+		{
+		  attach_neighbours(data, ii);
+		}
+	    }
+
+	  step = step + 1;
+	  
+	  if(std::none_of(data.begin(), data.end(), [ &cluster_num,  & step](int i){ return i  == cluster_num + step;}))
+	    {
+	      find_new_adjacents = false;
+
+	      //Reemplazar todos los números mayores que el número del cluster por el número del cluster.
+	      for(long jj = 0; jj < data.size(); ++jj)
+		{
+		  if(data[jj] > cluster_num)
+		    {
+		      data[jj] = cluster_num;
+		    }
+		}
+	    }
+
+	  //step = step + 1;	  
+	}
+
+      //Se aumenta el número del cluster.
+      cluster_num = cluster_num + 1;
+      
+      //Se busca el nuevo cluster.
+      new_cluster_position = find_nonclassified_cluster(data);
       
     }
 }
-*/
+
 
 void attach_neighbours(std::vector <long> & data, const long N)
 {
