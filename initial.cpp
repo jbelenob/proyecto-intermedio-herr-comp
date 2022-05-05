@@ -18,6 +18,7 @@ long find_nonclassified_cluster(std::vector <long> & data);
 long cluster_size(const std::vector <long> & data, const long cluster_num);
 void classify_clusters(std::vector <long> & data);
 void attach_neighbours(std::vector <long> & data, const long N);
+bool is_percolating(const std::vector <long> & data, const long cluster_num);
 
 int main(int argc, char** argv)
 {
@@ -36,6 +37,8 @@ int main(int argc, char** argv)
   classify_clusters(m1);
 
   print_matrix(m1);
+
+  std::cout << is_percolating(m1, 2);
 
   return 0;
 }
@@ -291,3 +294,70 @@ void attach_neighbours(std::vector <long> & data, const long N)
    attach_if_full(adj4);
 }
 
+bool is_percolating(const std::vector <long> & data, const long cluster_num)
+{
+  const long size = std::sqrt(data.size());
+
+  /*Para saber si el cluster numero N es percolante necesito encontrar,
+   *despues de haber clasficado, el número N en la primera y ultima fila, o
+   *el numero N, en la primera y última columna. Esas son las condiciones a verificar*/
+  bool condition1 = false;
+  bool condition2 = false;
+  
+  long ii = 0;
+
+  //Primero se chequea para las filas.
+  for(ii = 0; ii < size; ++ii)
+    {
+      if(data[ii] == cluster_num)
+	{
+	  condition1 = true;
+	}
+    }
+
+    for(ii = 0; ii < size; ++ii)
+    {
+      if(data[size*(size - 1) + ii] == cluster_num)
+	{
+	  condition2 = true;
+	}
+    }
+
+    if(condition1 && condition2)
+      {
+	return true;
+      }
+    else
+      {
+	condition1 = false;
+	condition2 = false;
+      }
+    
+    //Ahora se chequea para las columnas.
+
+    for(ii = 0; ii < size; ++ii)
+    {
+      if(data[ii*size] == cluster_num)
+	{
+	  condition1 = true;
+	}
+    }
+
+    for(ii = 0; ii < size; ++ii)
+    {
+      if(data[(size - 1) + ii*size] == cluster_num)
+	{
+	  condition2 = true;
+	}
+    }
+
+    if(condition1 && condition2)
+      {
+	return true;
+      }
+    else
+      {
+	return false;
+      }
+    
+}
