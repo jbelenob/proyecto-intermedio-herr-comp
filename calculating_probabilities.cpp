@@ -17,6 +17,7 @@ long largest_percolating_cluster_size(const std::vector <long> & data);
 long number_of_last_cluster(const std::vector <long> & data);
 double compute_mean(const std::vector <double> &data);
 double standard_deviation(const std::vector <double> &data, double mean);
+//void compute_mean_and_standard_deviation_for_percolating_probability(std::vector <double> &data, double probability, int reps_per_single_calculation, int number_of_calculations);
 
 
 int main(int argc, char** argv)
@@ -45,41 +46,48 @@ int main(int argc, char** argv)
 
   std::vector<double> probability_of_percolating(GROUPS_OF_CALCULATIONS, 0.0);
 
+  int different_probabilities_to_test = 10;
+
   //Matriz que se llenará.
   std::vector <long> m1(size*size, 0);
 
-  double fill_probability = probs(gen);
-
-  for(int jj = 0; jj < GROUPS_OF_CALCULATIONS; ++jj)
+  for(int kk = 0; kk < different_probabilities_to_test; ++kk)
     {
-      double one_calculation_prob = 0.0;
+
+      double fill_probability = probs(gen);
       
-      int number_of_percolatings = 0;
-      
-      for(int ii = 0; ii < REPS_PER_1_CALCULATION; ++ii)
+      for(int jj = 0; jj < GROUPS_OF_CALCULATIONS; ++jj)
 	{
-	  int fill_seed = new_seeds(gen);
-	  
-	  fill_matrix(m1, fill_seed, fill_probability);
-
-	  classify_clusters(m1);
-
-	  if(is_there_a_percolating(m1) == true)
+	  double one_calculation_prob = 0.0;
+      
+	  int number_of_percolatings = 0;
+      
+	  for(int ii = 0; ii < REPS_PER_1_CALCULATION; ++ii)
 	    {
-	      ++number_of_percolatings;
+	      int fill_seed = new_seeds(gen);
+	      
+	      fill_matrix(m1, fill_seed, fill_probability);
+
+	      classify_clusters(m1);
+
+	      if(is_there_a_percolating(m1) == true)
+		{
+		  ++number_of_percolatings;
+		}
 	    }
+
+	  one_calculation_prob = 1.0*(number_of_percolatings)/REPS_PER_1_CALCULATION;
+      
+	  probability_of_percolating[jj] = one_calculation_prob;
 	}
 
-      one_calculation_prob = 1.0*(number_of_percolatings)/REPS_PER_1_CALCULATION;
-      
-      probability_of_percolating[jj] = one_calculation_prob;
+      double mean_probability = compute_mean(probability_of_percolating);
+
+      double std_deviation_of_probability = standard_deviation(probability_of_percolating, mean_probability);
+
+      std::cout << size << '\t' << fill_probability << '\t' << mean_probability << '\t' << std_deviation_of_probability << '\n';
+
     }
-
-  double mean_probability = compute_mean(probability_of_percolating);
-
-  double std_deviation_of_probability = standard_deviation(probability_of_percolating, mean_probability);
-
-  std::cout << size << '\t' << fill_probability << '\t' << mean_probability << '\t' << std_deviation_of_probability << '\n';
   
   return 0;
 }
