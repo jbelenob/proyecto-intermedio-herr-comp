@@ -17,17 +17,14 @@ long largest_percolating_cluster_size(const std::vector <long> & data);
 long number_of_last_cluster(const std::vector <long> & data);
 double compute_mean(const std::vector <double> &data);
 double standard_deviation(const std::vector <double> &data, double mean);
-//void compute_mean_and_standard_deviation_for_percolating_probability(std::vector <double> &data, double probability, int reps_per_single_calculation, int number_of_calculations);
+void compute_mean_and_standard_deviation_for_percolating_probability(long size, double probability, int reps_per_single_calculation, int number_of_calculations, int seed);
 
 
 int main(int argc, char** argv)
 {
-
-  std::cout.precision(16); std::cout.setf(std::ios::scientific);
-  
   //size va a ser el número de filas o de columnas.
-  const long size = std::atol(argv[1]);
-  const int SEED = std::atoi(argv[2]);
+  const long SIZE = std::atol(argv[1]);
+  int SEED = std::atoi(argv[2]);
   //const double probability = std::atof(argv[3]);
 
   //Se repite este número de veces para calcular 1 vez.
@@ -39,54 +36,29 @@ int main(int argc, char** argv)
   std::mt19937 gen(SEED);
 
   //Este será el generador de las probabilidades
-  std::uniform_real_distribution<double> probs(0.55, 0.65);
-
-  //Este será el generador de las semillas que se necesitan para llenar la matriz.
-  std::uniform_int_distribution<int> new_seeds(1, 5000);
-
-  std::vector<double> probability_of_percolating(GROUPS_OF_CALCULATIONS, 0.0);
+  std::uniform_real_distribution<double> probs1(0.55, 0.65);
 
   int different_probabilities_to_test = 10;
 
-  //Matriz que se llenará.
-  std::vector <long> m1(size*size, 0);
+  double fill_probability = 0.0;
 
   for(int kk = 0; kk < different_probabilities_to_test; ++kk)
     {
 
-      double fill_probability = probs(gen);
-      
-      for(int jj = 0; jj < GROUPS_OF_CALCULATIONS; ++jj)
-	{
-	  double one_calculation_prob = 0.0;
-      
-	  int number_of_percolatings = 0;
-      
-	  for(int ii = 0; ii < REPS_PER_1_CALCULATION; ++ii)
-	    {
-	      int fill_seed = new_seeds(gen);
-	      
-	      fill_matrix(m1, fill_seed, fill_probability);
+      fill_probability = probs1(gen);
 
-	      classify_clusters(m1);
+      compute_mean_and_standard_deviation_for_percolating_probability(SIZE, fill_probability, REPS_PER_1_CALCULATION, GROUPS_OF_CALCULATIONS, SEED);
+    }
 
-	      if(is_there_a_percolating(m1) == true)
-		{
-		  ++number_of_percolatings;
-		}
-	    }
+  std::uniform_real_distribution<double> probs2(0.0, 1.0);
 
-	  one_calculation_prob = 1.0*(number_of_percolatings)/REPS_PER_1_CALCULATION;
-      
-	  probability_of_percolating[jj] = one_calculation_prob;
-	}
+  different_probabilities_to_test = 20;
 
-      double mean_probability = compute_mean(probability_of_percolating);
+   for(int jj = 0; jj < different_probabilities_to_test; ++jj)
+    {
+      fill_probability = probs2(gen);
 
-      double std_deviation_of_probability = standard_deviation(probability_of_percolating, mean_probability);
-
-      std::cout << size << '\t' << fill_probability << '\t' << mean_probability << '\t' << std_deviation_of_probability << '\n';
-
+      compute_mean_and_standard_deviation_for_percolating_probability(SIZE, fill_probability, REPS_PER_1_CALCULATION, GROUPS_OF_CALCULATIONS, SEED);
     }
   
   return 0;
@@ -484,4 +456,54 @@ double standard_deviation(const std::vector <double> &data, double mean)
   std_dev = std::sqrt(std_dev/data.size());
 
   return std_dev;
+}
+
+void compute_mean_and_standard_deviation_for_percolating_probability(long size, double probability, int reps_per_single_calculation, int number_of_calculations, int seed)
+{
+
+   std::cout.precision(16); 
+  
+  //Matriz que se llenará
+  std::vector <long> m(size*size, 0);
+  
+  std::vector<double> probability_of_percolating(number_of_calculations, 0.0);
+  
+  std::mt19937 generator(seed);
+
+  //Este será el generador de las semillas que se necesitan para llenar la matriz.
+  std::uniform_int_distribution<int> new_seeds(1, 5000);
+  
+  for(int jj = 0; jj < number_of_calculations; ++jj)
+    {
+      double one_calculation_prob = 0.0;
+      
+      int number_of_percolatings = 0;
+      
+      for(int ii = 0; ii < reps_per_single_calculation; ++ii)
+	{
+	  int fill_seed = new_seeds(generator);
+	  
+	  fill_matrix(m, fill_seed, probability);
+
+	  classify_clusters(m);
+
+	  if(is_there_a_percolating(m) == true)
+		{
+		  ++number_of_percolatings;
+		}
+	    }
+
+      one_calculation_prob = 1.0*(number_of_percolatings)/(1.0*reps_per_single_calculation);
+      
+	  probability_of_percolating[jj] = one_calculation_prob;
+	}
+
+      double mean_probability = compute_mean(probability_of_percolating);
+
+      double std_deviation_of_probability = standard_deviation(probability_of_percolating, mean_probability);
+
+      std::cout << probability << '\t';
+
+      std::cout << mean_probability << '\t' << std_deviation_of_probability << '\n';
+
 }
