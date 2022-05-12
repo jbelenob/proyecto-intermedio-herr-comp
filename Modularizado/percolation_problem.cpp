@@ -48,7 +48,10 @@ long cluster_size(const std::vector<long> &data, const long cluster_num) {
                        [cluster_num](long i) { return i == cluster_num; });
 }
 
-void classify_clusters(std::vector<long> &data) {
+void classify_clusters(std::vector<long> &data)
+{
+  const long size = data.size();
+  
   /*Esta variable me va indicar si ya se identificaron todos los clusters.
    *Si la variable es mayor que 0 es porque se encontró un nuevo cluster.*/
   long new_cluster_position = find_nonclassified_cluster(data);
@@ -68,7 +71,7 @@ void classify_clusters(std::vector<long> &data) {
     bool find_new_adjacents = true;
 
     while (find_new_adjacents == true) {
-      for (long ii = 0; ii < data.size(); ++ii) {
+      for (long ii = 0; ii < size; ++ii) {
         if (data[ii] == (cluster_num + step)) {
           attach_neighbours(data, ii);
         }
@@ -83,7 +86,7 @@ void classify_clusters(std::vector<long> &data) {
 
         // Reemplazar todos los números mayores que el número del cluster por el
         // número del cluster.
-        for (long jj = 0; jj < data.size(); ++jj) {
+        for (long jj = 0; jj < size; ++jj) {
           if (data[jj] > cluster_num) {
             data[jj] = cluster_num;
           }
@@ -311,16 +314,19 @@ long largest_percolating_cluster_size(const std::vector<long> &data) {
   return largest_size;
 }
 
-long number_of_last_cluster(const std::vector<long> &data) {
+long number_of_last_cluster(const std::vector<long> &data)
+{
+  const long size = data.size();
+  
   long ii = 0;
 
-  for (ii = 2; ii < data.size(); ++ii) {
+  for (ii = 2; ii < size; ++ii) {
     if (std::none_of(data.begin(), data.end(),
                      [ii](int k) { return k == ii; })) {
       break;
     }
   }
-
+  
   if (ii <= 2) {
     return 0;
   }
@@ -332,10 +338,13 @@ double compute_mean(const std::vector<double> &data) {
   return std::accumulate(data.begin(), data.end(), 0.0) / data.size();
 }
 
-double standard_deviation(const std::vector<double> &data, double mean) {
+double standard_deviation(const std::vector<double> &data, double mean)
+{
+  const long size = data.size();
+  
   double std_dev = 0.0;
 
-  for (int kk = 0; kk < data.size(); ++kk) {
+  for (int kk = 0; kk < size; ++kk) {
     std_dev += (data[kk] - mean) * (data[kk] - mean);
   }
 
