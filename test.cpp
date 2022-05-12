@@ -109,9 +109,9 @@ long cluster_size(const std::vector <long> & data, const long cluster_num)
 
 void classify_clusters(std::vector <long> & data)
 {
-
-  const long size = data.size();
+  const long size = data.size(); 
   
+  long print_num = 1;
   /*Esta variable me va indicar si ya se identificaron todos los clusters.
    *Si la variable es mayor que 0 es porque se encontró un nuevo cluster.*/
   long new_cluster_position = find_nonclassified_cluster(data);
@@ -121,7 +121,7 @@ void classify_clusters(std::vector <long> & data)
 
   //Esta variable me dirá cuantos pasos he dado para clasificar cierto cluster.
   long step = 0;
-  
+
   while(new_cluster_position >= 0)
     {
       data[new_cluster_position] = cluster_num;
@@ -132,7 +132,11 @@ void classify_clusters(std::vector <long> & data)
       bool find_new_adjacents = true;
 
       while(find_new_adjacents == true)
-	{ 
+	{
+	  ++print_num;
+	  std::cout << '\n' <<"Print.No: " << print_num << '\n';
+	  print_matrix(data);
+
 	  for(long ii = 0; ii < size; ++ii)
 	    {
 	      if(data[ii] == (cluster_num + step))
@@ -142,7 +146,7 @@ void classify_clusters(std::vector <long> & data)
 	    }
 
 	  step = step + 1;
-	  
+
 	  if(std::none_of(data.begin(), data.end(), [ &cluster_num,  & step](int i){ return i  == cluster_num + step;}))
 	    {
 	      find_new_adjacents = false;
@@ -155,6 +159,10 @@ void classify_clusters(std::vector <long> & data)
 		      data[jj] = cluster_num;
 		    }
 		}
+
+	      ++print_num;
+	      std::cout << '\n' << "Print.No: " << print_num << '\n';
+	      print_matrix(data);
 	    }
 
 	  //step = step + 1;	  
@@ -162,10 +170,10 @@ void classify_clusters(std::vector <long> & data)
 
       //Se aumenta el número del cluster.
       cluster_num = cluster_num + 1;
-      
+
       //Se busca el nuevo cluster.
       new_cluster_position = find_nonclassified_cluster(data);
-      
+
     }
 }
 
