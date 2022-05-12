@@ -1,0 +1,38 @@
+CXX= g++
+CXXFLAGS=-std=c++17 -g
+SANITFLAGS=-fsanitize=address -fsanitize=leak -fsanitize=undefined
+VALGRINDFLAGS=--tool=memcheck --track-origins=yes --leak-check=full
+NAME = percolation_problem
+ARCH1_NAME = calculating_probabilities
+OBJ = $(SOURCES:.cpp=.o) # extracts automatically the objects names
+EXE = $(SOURCES:.cpp= .x)
+ICS = 4 4 10 4
+DEPS = $(ARCH1_NAME).cpp $(NAME).cpp
+
+all: $(ARCH1_NAME).x $(ARCH1_NAME).cpp
+	./$< $(ICS)  
+             
+	
+$(ARCH1_NAME).x: $(ARCH1_NAME).cpp $(NAME).cpp
+	$(CXX) -std=c++17 $^ -o $@
+
+.PHONY: santizers debug valgrind clean
+	
+sanitizers: $(ARCH1_NAME).x $(DEPS)
+	$(CXX) -std=c++17 $(SANITFLAGS) $(DEPS) -o $(ARCH1_NAME).x
+	./$< $(ICS)
+
+debug: $(ARCH1_NAME).x $(DEPS)
+	$(CXX) $(CXXFLAGS) $(DEPS) -o $(ARCH1_NAME).x
+	gdb ./$<
+
+valgrind: $(ARCH1_NAME).x $(DEPS)
+	$(CXX) $(CXXFLAGS) $(DEPS) -o $(ARCH1_NAME).x
+	valgrind $(VALGRINDFLAGS) ./$< $(ICS)
+
+Wall:  $(ARCH1_NAME).x $(DEPS)
+	$(CXX) -Wall $(DEPS) -o $(ARCH1_NAME).x
+	./$< $(ICS)
+
+clean:
+	rm -rf *.x a.out *.x.*
