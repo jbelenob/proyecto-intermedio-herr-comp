@@ -51,24 +51,6 @@ int main(int argc, char** argv)
   return 0;
 }
 
-void fill_matrix(std::vector<long> & data, int seed, double p)
-{
-  const long size = std::sqrt(data.size());
-
-  std::mt19937 gen(seed);
-
-  //Los sitios ocupados tendrán el numero 1, los no ocupados el 0.
-  std::discrete_distribution<> dis({1-p, p});
-
-  for(long ii = 0; ii < size; ++ii)
-    {
-      for(long jj = 0; jj < size; ++jj)
-      {
-	data[ii*size + jj] = dis(gen);
-      }
-    } 
-}
-
 void print_matrix(const std::vector <long> & data)
 {
    const long size = std::sqrt(data.size());
@@ -109,7 +91,9 @@ long cluster_size(const std::vector <long> & data, const long cluster_num)
 
 void classify_clusters(std::vector <long> & data)
 {
-  long print_num = 1;
+
+  const long size = data.size();
+  
   /*Esta variable me va indicar si ya se identificaron todos los clusters.
    *Si la variable es mayor que 0 es porque se encontró un nuevo cluster.*/
   long new_cluster_position = find_nonclassified_cluster(data);
@@ -130,12 +114,8 @@ void classify_clusters(std::vector <long> & data)
       bool find_new_adjacents = true;
 
       while(find_new_adjacents == true)
-	{
-	  ++print_num;
-	  std::cout << '\n' <<"Print.No: " << print_num << '\n';
-	  print_matrix(data);
-	  
-	  for(long ii = 0; ii < data.size(); ++ii)
+	{ 
+	  for(long ii = 0; ii < size; ++ii)
 	    {
 	      if(data[ii] == (cluster_num + step))
 		{
@@ -150,17 +130,13 @@ void classify_clusters(std::vector <long> & data)
 	      find_new_adjacents = false;
 
 	      //Reemplazar todos los números mayores que el número del cluster por el número del cluster.
-	      for(long jj = 0; jj < data.size(); ++jj)
+	      for(long jj = 0; jj < size; ++jj)
 		{
 		  if(data[jj] > cluster_num)
 		    {
 		      data[jj] = cluster_num;
 		    }
 		}
-
-	      ++print_num;
-	      std::cout << '\n' << "Print.No: " << print_num << '\n';
-	      print_matrix(data);
 	    }
 
 	  //step = step + 1;	  
@@ -421,8 +397,10 @@ long largest_percolating_cluster_size(const std::vector <long> & data)
 long number_of_last_cluster(const std::vector <long> & data)
 {
   long ii = 0;
+
+  const long size = data.size();
   
-  for( ii = 2; ii < data.size(); ++ii)
+  for( ii = 2; ii < size; ++ii)
     {
        if(std::none_of(data.begin(), data.end(), [ii](int k){ return k  == ii;}))
 	 {break;}
@@ -432,4 +410,75 @@ long number_of_last_cluster(const std::vector <long> & data)
     {return 0;}
   
   return (ii - 1);
+}
+
+double compute_mean(const std::vector <double> &data)
+{
+  return std::accumulate(data.begin(), data.end(), 0.0)/data.size();
+}
+
+double standard_deviation(const std::vector <double> &data, double mean)
+{
+  double std_dev = 0.0;
+
+  const long size = data.size();
+
+  for(int kk = 0; kk < size; ++kk)
+    {
+      std_dev += (data[kk] - mean)*(data[kk] - mean);
+    }
+
+  std_dev = std::sqrt(std_dev/size);
+
+  return std_dev;
+}
+
+void compute_mean_and_standard_deviation_for_percolating_probability(long size, double probability, int reps_per_single_calculation, int number_of_calculations, int seed)
+{
+
+   std::cout.precision(16); 
+  
+  //Matriz que se llenará
+  std::vector <long> m(size*size, 0);
+  
+  std::vector<double> probability_of_percolating(number_of_calculations, 0.0);
+  
+  std::mt19937 generator(seed);
+
+  //Este será el generador de las semillas que se necesitan para llenar la matriz.
+  std::uniform_int_distribution<int> new_seeds(1, 5000);
+  
+  for(int jj = 0; jj < number_of_calculations; ++jj)
+    {
+      double one_calculation_prob = 0.0;
+      
+      int number_of_percolatings = 0;
+      
+      for(int ii = 0; ii < reps_per_single_calculation; ++ii)
+	{
+	  int fill_seed = new_seeds(generator);
+	  
+	  fill_matrix(m, fill_seed, probability);
+
+	  classify_clusters(m);
+
+	  if(is_there_a_percolating(m) == true)
+		{
+		  ++number_of_percolatings;
+		}
+	    }
+
+      one_calculation_prob = 1.0*(number_of_percolatings)/(1.0*reps_per_single_calculation);
+      
+	  probability_of_percolating[jj] = one_calculation_prob;
+	}
+
+      double mean_probability = compute_mean(probability_of_percolating);
+
+      double std_deviation_of_probability = standard_deviation(probability_of_percolating, mean_probability);
+
+      std::cout << probability << '\t';
+
+      std::cout << mean_probability << '\t' << std_deviation_of_probability << '\n';
+
 }
