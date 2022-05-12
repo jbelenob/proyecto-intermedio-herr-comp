@@ -51,6 +51,24 @@ int main(int argc, char** argv)
   return 0;
 }
 
+void fill_matrix(std::vector<long> & data, int seed, double p)
+{
+  const long size = std::sqrt(data.size());
+
+  std::mt19937 gen(seed);
+
+  //Los sitios ocupados tendrán el numero 1, los no ocupados el 0.
+  std::discrete_distribution<> dis({1-p, p});
+
+  for(long ii = 0; ii < size; ++ii)
+    {
+      for(long jj = 0; jj < size; ++jj)
+      {
+	data[ii*size + jj] = dis(gen);
+      }
+    } 
+}
+
 void print_matrix(const std::vector <long> & data)
 {
    const long size = std::sqrt(data.size());
