@@ -360,7 +360,7 @@ void compute_mean_and_standard_deviation_for_percolating_probability(
   std::cout.precision(16);
 
   // Matriz que se llenará
-  std::vector<long> m(size * size, 0);
+  std::vector<long> m(size*size, 0);
 
   std::vector<double> probability_of_percolating(number_of_calculations, 0.0);
 
@@ -387,8 +387,7 @@ void compute_mean_and_standard_deviation_for_percolating_probability(
       }
     }
 
-    one_calculation_prob =
-        1.0 * (number_of_percolatings) / (1.0 * reps_per_single_calculation);
+    one_calculation_prob = (number_of_percolatings)/(1.0*reps_per_single_calculation);
 
     probability_of_percolating[jj] = one_calculation_prob;
   }
@@ -398,7 +397,6 @@ void compute_mean_and_standard_deviation_for_percolating_probability(
   double std_deviation_of_probability =
       standard_deviation(probability_of_percolating, mean_probability);
 
-  std::cout << probability << '\t';
-
-  std::cout << mean_probability << '\t' << std_deviation_of_probability << '\n';
+  std::cout << probability << '\t' << mean_probability << '\t'
+	    << std_deviation_of_probability << '\n';
 }
