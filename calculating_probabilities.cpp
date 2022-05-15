@@ -1,9 +1,7 @@
 #include "percolation_problem.h"
 
 int main(int argc, char** argv)
-{
-  auto start = std::chrono::steady_clock::now();
-  
+{ 
   //size va a ser el número de filas o de columnas.
   const long SIZE = std::atol(argv[1]);
   int SEED = std::atoi(argv[2]);
@@ -42,12 +40,6 @@ int main(int argc, char** argv)
 
       compute_mean_and_standard_deviation_for_percolating_probability(SIZE, fill_probability, REPS_PER_1_CALCULATION, GROUPS_OF_CALCULATIONS, SEED);
     }
-
-   auto end = std::chrono::steady_clock::now();
-
-   std::chrono::duration<double> elapsed_seconds = end-start;
-
-   std::cerr << SIZE << '\t'<< elapsed_seconds.count() << '\n';
    
   return 0;
 }
