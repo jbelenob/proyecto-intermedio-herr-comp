@@ -357,6 +357,8 @@ void compute_mean_and_standard_deviation_for_percolating_probability(
     long size, double probability, int reps_per_single_calculation,
     int number_of_calculations, int seed) {
 
+  auto start = std::chrono::steady_clock::now();
+  
   std::cout.precision(16);
 
   // Matriz que se llenará
@@ -399,4 +401,11 @@ void compute_mean_and_standard_deviation_for_percolating_probability(
 
   std::cout << probability << '\t' << mean_probability << '\t'
 	    << std_deviation_of_probability << '\n';
+
+  
+   auto end = std::chrono::steady_clock::now();
+
+   std::chrono::duration<double> elapsed_seconds = end-start;
+
+   std::cerr << size << '\t' << probability << '\t' << elapsed_seconds.count() << '\n';
 }
